@@ -1,26 +1,202 @@
 @import "tailwindcss";
 
+/* ============================================
+   MY LONG ISLAND — Coastal Design System
+   Dark mode default, ocean-inspired palette
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core Coastal Palette */
+  --color-deep-ocean: #062A3A;
+  --color-ocean: #0B4F6C;
+  --color-sky: #4FACFE;
+  --color-sea-glass: #2EC4B6;
+  --color-seafoam: #CBF3F0;
+  --color-sand: #F5E6D3;
+  --color-sunset: #FF6B35;
+  --color-sunset-glow: #FFA62B;
+  --color-storm-gray: #3D5A6E;
+  --color-lighthouse: #FFFFFF;
+
+  /* Semantic Tokens — dark mode is default */
+  --bg-primary: var(--color-deep-ocean);
+  --bg-secondary: var(--color-ocean);
+  --bg-card: var(--color-ocean);
+  --bg-elevated: #0D3D54;
+  --text-primary: var(--color-lighthouse);
+  --text-secondary: var(--color-seafoam);
+  --text-muted: var(--color-storm-gray);
+  --border-default: #0F5A7E;
+  --accent-primary: var(--color-sea-glass);
+  --accent-alert: var(--color-sunset);
+  --accent-badge: var(--color-sunset-glow);
+  --accent-link: var(--color-sky);
+
+  /* Seasonal override tokens (changed by SeasonalWrapper) */
+  --season-accent: var(--color-sea-glass);
+  --season-accent-soft: var(--color-seafoam);
+  --season-bg-tint: transparent;
+  --season-gradient-start: var(--color-ocean);
+  --season-gradient-end: var(--color-deep-ocean);
+
+  /* Typography */
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
 }
 
+/* Light mode override — toggled by user preference */
+[data-theme="light"] {
+  --bg-primary: var(--color-sand);
+  --bg-secondary: var(--color-lighthouse);
+  --bg-card: var(--color-lighthouse);
+  --bg-elevated: #FFF8F0;
+  --text-primary: var(--color-deep-ocean);
+  --text-secondary: var(--color-ocean);
+  --text-muted: var(--color-storm-gray);
+  --border-default: #E0D5C8;
+}
+
+/* ---- Seasonal Modes ---- */
+[data-season="summer"] {
+  --season-accent: var(--color-sunset-glow);
+  --season-accent-soft: #FFD699;
+  --season-gradient-start: #0B4F6C;
+  --season-gradient-end: #FF6B35;
+}
+
+[data-season="fall"] {
+  --season-accent: #D4620A;
+  --season-accent-soft: #B8600A;
+  --season-gradient-start: #3D1F00;
+  --season-gradient-end: #FF6B35;
+}
+
+[data-season="winter"] {
+  --season-accent: var(--color-sky);
+  --season-accent-soft: #A5D5F7;
+  --season-gradient-start: #031C28;
+  --season-gradient-end: #0B4F6C;
+}
+
+[data-season="spring"] {
+  --season-accent: #4CAF50;
+  --season-accent-soft: #81C784;
+  --season-gradient-start: #062A3A;
+  --season-gradient-end: #2EC4B6;
+}
+
+/* ---- Storm Mode Override ---- */
+[data-storm="active"] {
+  --bg-primary: #0A0A0A;
+  --bg-secondary: #1A1A1A;
+  --bg-card: #1A1A1A;
+  --accent-primary: var(--color-sunset);
+  --accent-alert: #FF3B30;
+  --border-default: #333333;
+}
+
+/* ---- Tailwind v4 Theme Registration ---- */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-heading);
+
+  /* Register custom colors for Tailwind classes */
+  --color-deep-ocean: #062A3A;
+  --color-ocean: #0B4F6C;
+  --color-sky: #4FACFE;
+  --color-sea-glass: #2EC4B6;
+  --color-seafoam: #CBF3F0;
+  --color-sand: #F5E6D3;
+  --color-sunset: #FF6B35;
+  --color-sunset-glow: #FFA62B;
+  --color-storm-gray: #3D5A6E;
+  --color-lighthouse: #FFFFFF;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* ---- Base Styles ---- */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* ---- Glass-morphism utility ---- */
+.glass {
+  background: rgba(6, 42, 58, 0.9);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.glass-light {
+  background: rgba(245, 230, 211, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* ---- Card base ---- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  border-radius: 12px;
+  transition: all 200ms ease;
+}
+
+.card:hover {
+  background: var(--bg-elevated);
+  transform: translateY(-1px);
+}
+
+/* ---- Skeleton loading shimmer ---- */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-ocean) 25%,
+    #0D5D80 50%,
+    var(--color-ocean) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+/* ---- Home zone pulse ---- */
+@keyframes home-pulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  50%  { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1);   opacity: 0.6; }
+}
+
+/* ---- Toast animation ---- */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@keyframes toast-out {
+  from { opacity: 1; }
+  to   { opacity: 0; transform: translateX(-50%) translateY(20px); }
+}
+
+/* ---- Mapbox overrides ---- */
+.mapboxgl-ctrl-logo {
+  display: none !important;
+}
+
+.mapboxgl-ctrl-attrib {
+  opacity: 0.5;
+  font-size: 10px;
 }

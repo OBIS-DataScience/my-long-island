@@ -1,65 +1,124 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
+import AppShell from "@/components/layout/AppShell";
+import QuickGlanceBar from "@/components/ui/QuickGlanceBar";
+import { Newspaper, CloudSun, AlertTriangle, Calendar } from "lucide-react";
+
+/**
+ * Home Page — "The Daily Pulse"
+ *
+ * This is the first screen users see. It answers the question every
+ * Long Islander asks every morning: "What's happening today?"
+ *
+ * Structure:
+ * 1. Quick Glance Bar (LIRR, power, tide status pills)
+ * 2. Breaking/Alert card (conditional — only shows when active)
+ * 3. Town Feed (news, events, incidents from your zip/hamlet)
+ *
+ * All content is filtered to the user's home zone by default.
+ */
+
+export default function HomePage() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <AppShell>
+      {/* Quick Glance — always visible in peek mode */}
+      <QuickGlanceBar />
+
+      {/* Section: Breaking Alert (conditional — placeholder) */}
+      <div className="mt-4 p-3 rounded-xl border border-[var(--color-sunset)]/40 bg-[var(--color-sunset)]/10">
+        <div className="flex items-start gap-2">
+          <AlertTriangle size={18} className="text-[var(--color-sunset)] mt-0.5 shrink-0" />
+          <div>
+            <span className="text-[10px] font-bold text-[var(--color-sunset)] uppercase tracking-wider">
+              Breaking
+            </span>
+            <p className="text-sm text-[var(--text-primary)] mt-0.5 leading-snug">
+              Water main break on Rte 25A near Main St. Expect delays.
+            </p>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </div>
+
+      {/* Section: Town Feed */}
+      <div className="mt-6">
+        <h2 className="font-serif text-lg font-semibold text-[var(--text-primary)] mb-3">
+          Your Town
+        </h2>
+
+        {/* Placeholder feed cards — will be replaced with real data */}
+        <div className="flex flex-col gap-3">
+          <FeedCard
+            icon={<Newspaper size={14} />}
+            source="NEWSDAY"
+            time="2h ago"
+            title="School Board Approves $180M Budget for 2026-27"
+            category="news"
+          />
+          <FeedCard
+            icon={<CloudSun size={14} />}
+            source="WEATHER"
+            time="45m ago"
+            title="Nor'easter Watch: 6-10&quot; Expected Thursday"
+            category="weather"
+          />
+          <FeedCard
+            icon={<Calendar size={14} />}
+            source="EVENTS"
+            time="3h ago"
+            title="Festival of Lights This Saturday at Main Street"
+            category="events"
+          />
         </div>
-      </main>
-    </div>
+      </div>
+
+      {/* Contextual empty state — shows when there's nothing new */}
+      <div className="mt-8 text-center py-6">
+        <p className="text-sm text-[var(--text-muted)]">
+          Your neighborhood is quiet today.
+        </p>
+      </div>
+    </AppShell>
+  );
+}
+
+/**
+ * FeedCard — a single item in the town feed.
+ * Shows a source tag, headline, and timestamp.
+ */
+function FeedCard({
+  icon,
+  source,
+  time,
+  title,
+  category,
+}: {
+  icon: React.ReactNode;
+  source: string;
+  time: string;
+  title: string;
+  category: "news" | "weather" | "events" | "safety";
+}) {
+  const categoryColors = {
+    news: "text-[var(--color-sky)]",
+    weather: "text-[var(--color-seafoam)]",
+    events: "text-[var(--color-sunset-glow)]",
+    safety: "text-[var(--color-sunset)]",
+  };
+
+  return (
+    <button className="card p-3 text-left w-full">
+      <div className="flex items-center gap-2 mb-1.5">
+        <span className={categoryColors[category]}>{icon}</span>
+        <span className={`text-[10px] font-bold uppercase tracking-wider ${categoryColors[category]}`}>
+          {source}
+        </span>
+        <span className="text-[10px] text-[var(--text-muted)] ml-auto">
+          {time}
+        </span>
+      </div>
+      <p className="text-sm font-medium text-[var(--text-primary)] leading-snug">
+        {title}
+      </p>
+    </button>
   );
 }
