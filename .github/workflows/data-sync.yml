@@ -1,0 +1,50 @@
+# ============================================================
+# My Long Island — Data Sync Cron
+#
+# This workflow runs every 4 hours and calls our API routes
+# to fetch fresh Long Island data (weather, LIRR, events, news)
+# and store it in Supabase as a daily snapshot.
+#
+# It uses a CRON_SECRET to authenticate — the same secret is
+# stored in both Vercel (env var) and GitHub (repo secret).
+# ============================================================
+
+name: Data Sync
+
+on:
+  schedule:
+    # Runs at 12am, 4am, 8am, 12pm, 4pm, 8pm UTC
+    # (That's 8pm, 12am, 4am, 8am, 12pm, 4pm Eastern)
+    - cron: "0 0,4,8,12,16,20 * * *"
+
+  # Allows you to click "Run workflow" in the GitHub Actions tab
+  # to trigger a manual sync anytime
+  workflow_dispatch:
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync Weather
+        run: |
+          curl -f -s -o /dev/null -w "Weather: HTTP %{http_code}\n" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/weather"
+
+      - name: Sync LIRR Status
+        run: |
+          curl -f -s -o /dev/null -w "LIRR: HTTP %{http_code}\n" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/lirr"
+
+      - name: Sync Events
+        run: |
+          curl -f -s -o /dev/null -w "Events: HTTP %{http_code}\n" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/events"
+
+      - name: Sync News
+        run: |
+          curl -f -s -o /dev/null -w "News: HTTP %{http_code}\n" \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/news"

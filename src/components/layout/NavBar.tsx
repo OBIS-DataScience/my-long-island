@@ -1,7 +1,8 @@
 "use client";
 
 import { useUserStore } from "@/stores/userStore";
-import { Cloud, MapPin } from "lucide-react";
+import { useWeather } from "@/lib/hooks/useWeather";
+import { Cloud, CloudRain, Sun, CloudSnow, MapPin } from "lucide-react";
 
 /**
  * NavBar — the top header bar.
@@ -14,6 +15,7 @@ import { Cloud, MapPin } from "lucide-react";
  */
 export default function NavBar() {
   const { displayName, homeZone, mode, setMode } = useUserStore();
+  const { current, loading: weatherLoading } = useWeather();
 
   // Generate a greeting based on time of day
   const getGreeting = () => {
@@ -25,6 +27,16 @@ export default function NavBar() {
 
   const greeting = getGreeting();
   const name = displayName || homeZone.hamlet || "Long Island";
+
+  // Pick a weather icon based on the condition text
+  const WeatherIcon = getWeatherIcon(current?.condition);
+
+  // Show temperature or loading state
+  const tempDisplay = weatherLoading
+    ? "…"
+    : current?.temperature_f != null
+      ? `${Math.round(current.temperature_f)}°F`
+      : "--°F";
 
   return (
     <header className="fixed top-0 left-0 right-0 z-40 glass">
@@ -42,10 +54,10 @@ export default function NavBar() {
           </div>
         </div>
 
-        {/* Center: Weather snippet (placeholder) */}
+        {/* Center: Live weather snippet */}
         <div className="flex items-center gap-1.5 text-sm text-[var(--text-secondary)]">
-          <Cloud size={16} />
-          <span>--°F</span>
+          <WeatherIcon size={16} />
+          <span>{tempDisplay}</span>
         </div>
 
         {/* Right: Local/Tourist toggle */}
@@ -74,4 +86,18 @@ export default function NavBar() {
       </div>
     </header>
   );
+}
+
+/**
+ * Returns an appropriate weather icon component based on the condition text.
+ * NWS conditions include things like "Partly Cloudy", "Rain", "Snow", etc.
+ */
+function getWeatherIcon(condition: string | null | undefined) {
+  if (!condition) return Cloud;
+
+  const lower = condition.toLowerCase();
+  if (lower.includes("rain") || lower.includes("shower")) return CloudRain;
+  if (lower.includes("snow") || lower.includes("ice") || lower.includes("sleet")) return CloudSnow;
+  if (lower.includes("clear") || lower.includes("sunny") || lower.includes("fair")) return Sun;
+  return Cloud;
 }
