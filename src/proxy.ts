@@ -8,7 +8,7 @@ import { updateSession } from "@/lib/supabase/middleware";
  * Without this, users would get randomly logged out as their session
  * tokens expire.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   return await updateSession(request);
 }
 
